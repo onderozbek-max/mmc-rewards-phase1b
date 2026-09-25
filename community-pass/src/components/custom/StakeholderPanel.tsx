@@ -159,8 +159,9 @@ export function StakeholderPanel() {
         </Section>
 
         <Section title="Not built yet">
-          Completing an activity does not update points or progress in this prototype. The participate → earn →
-          updated progress feedback loop is introduced in Phase 1C.
+          Eligible activity points already update the member's underlying lifetime progress. What is not yet built
+          is a dedicated feedback moment explaining that change. Phase 1C adds the explicit participate → earn →
+          see progress change experience immediately after successful completion.
         </Section>
 
         <div style={{ marginTop: 24 }}>

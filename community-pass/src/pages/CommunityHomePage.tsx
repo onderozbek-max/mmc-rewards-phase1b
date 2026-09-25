@@ -11,15 +11,22 @@ import { ActivityCard } from "../components/custom/ActivityCard";
 import { FaqCallout } from "../components/custom/FaqCallout";
 import { ChevronRightIcon } from "../components/Icons/Icons";
 import { getCommunityPassProgress } from "../utils/communityPassProgress";
-import { navigateTo, useCompletedOpenActivityIds, useMemberStateId } from "../utils/appState";
-import { getLifetimePoints, MEMBER_NAME, MEMBER_STATES, OPEN_ACTIVITIES } from "../data/communityPassData";
+import {
+  navigateTo,
+  useCompletedOpenActivityIds,
+  useLifetimePoints,
+  useMemberStateId,
+  useSessionCompletedActivities,
+} from "../utils/appState";
+import { MEMBER_NAME, MEMBER_STATES, OPEN_ACTIVITIES } from "../data/communityPassData";
 
 export function CommunityHomePage() {
   const memberStateId = useMemberStateId();
-  const lifetimePoints = getLifetimePoints(memberStateId);
+  const lifetimePoints = useLifetimePoints();
   const progress = getCommunityPassProgress(lifetimePoints);
   const completedOpenActivityIds = useCompletedOpenActivityIds();
-  const completedCount = MEMBER_STATES[memberStateId].completedActivities.length;
+  const sessionCompletedActivities = useSessionCompletedActivities();
+  const completedCount = MEMBER_STATES[memberStateId].completedActivities.length + sessionCompletedActivities.length;
 
   return (
     <Page title="Member's Mark Community" titleVisuallyHidden>

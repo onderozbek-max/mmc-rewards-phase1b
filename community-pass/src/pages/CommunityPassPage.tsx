@@ -8,8 +8,8 @@ import { CheckCircleIcon } from "../components/Icons/Icons";
 import { ScreenHeader } from "../components/custom/ScreenHeader";
 import { MilestoneProgressBar } from "../components/custom/MilestoneProgressBar";
 import { getCommunityPassProgress, formatPoints } from "../utils/communityPassProgress";
-import { navigateTo, useMemberStateId } from "../utils/appState";
-import { getLifetimePoints, MILESTONES } from "../data/communityPassData";
+import { navigateTo, useLifetimePoints } from "../utils/appState";
+import { MILESTONES } from "../data/communityPassData";
 
 /**
  * Community Pass detail — the member's full progression story, told as one
@@ -20,8 +20,7 @@ import { getLifetimePoints, MILESTONES } from "../data/communityPassData";
  * from nesting everything in its own bordered card.
  */
 export function CommunityPassPage() {
-  const memberStateId = useMemberStateId();
-  const lifetimePoints = getLifetimePoints(memberStateId);
+  const lifetimePoints = useLifetimePoints();
   const progress = getCommunityPassProgress(lifetimePoints);
   const { nextMilestone, pointsRemaining, intervalFloor, intervalCeiling } = progress;
 

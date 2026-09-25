@@ -9,27 +9,32 @@ import { Button } from "../components/Button";
 import { Alert } from "../components/Alert";
 import { Tag } from "../components/Tag";
 import { ScreenHeader } from "../components/custom/ScreenHeader";
-import { navigateTo, useActiveActivityId, markOpenActivityCompleted } from "../utils/appState";
+import { navigateTo, useActiveActivityId, useMemberStateId, markOpenActivityCompleted } from "../utils/appState";
 import { OPEN_ACTIVITIES } from "../data/communityPassData";
 
 const Q1_OPTIONS = ["Very likely", "Somewhat likely", "Not likely"];
 const Q2_OPTIONS = ["Great", "Okay", "Not great"];
 
 /**
- * Simulated RedJade-style survey activity. Phase 1A scope: a believable
- * complete/return loop, no rich post-completion earning feedback (that's
- * 1C). The member state does not change on completion — the activity card
- * simply flips to "Completed" for the rest of the session.
+ * Simulated RedJade-style survey activity. On successful submission, the
+ * member's underlying Community Pass lifetime points update silently — this
+ * is Phase 1A/1B-level accounting, not deferred. What IS still deferred to
+ * Phase 1C is a dedicated post-completion feedback moment; the activity card
+ * simply flips to "Completed" and the member sees the corrected totals when
+ * they naturally arrive on Home/Community Pass/Profile — no "+30", no
+ * animated transition, no completion bottom sheet here or on return.
+ * Exiting (back) before submitting still awards zero points.
  */
 export function ActivityPage() {
   const activityId = useActiveActivityId();
+  const memberStateId = useMemberStateId();
   const activity = OPEN_ACTIVITIES.find((a) => a.id === activityId) ?? OPEN_ACTIVITIES[0];
   const [q1, setQ1] = React.useState<string | null>(null);
   const [q2, setQ2] = React.useState<string | null>(null);
   const [submitted, setSubmitted] = React.useState(false);
 
   function handleReturn() {
-    markOpenActivityCompleted(activity.id);
+    markOpenActivityCompleted(memberStateId, activity.id);
     navigateTo("home");
   }
 
