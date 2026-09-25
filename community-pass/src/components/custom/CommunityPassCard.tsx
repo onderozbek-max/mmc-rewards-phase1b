@@ -10,14 +10,17 @@ export interface CommunityPassCardProps {
 }
 
 /**
- * Compact Community Pass entry point on Community Home.
+ * Community Pass goal block on Community Home.
  *
- * Phase 1B: still an ORIENTATION + ENTRY POINT, not a rewards dashboard —
- * but the goal (points remaining + what it unlocks) now leads instead of
- * the raw lifetime-points counter, so a member can register "what I'm
- * working toward" at a glance, without opening Community Pass. Open
- * Activities — the primary reason members come to Home — still reads as
- * materially more prominent than this single card.
+ * Phase 1B revision: this no longer stands alone as its own bordered card.
+ * It is the top compartment of a single shared panel — see
+ * `CommunityHomePage` — that also contains the activities that can move the
+ * member toward this goal, so the goal and the ways to act on it read as one
+ * system instead of two separately-framed pieces of the page. This
+ * component therefore renders no background/border of its own; it inherits
+ * the panel's surface. The goal (points remaining + what it unlocks) leads
+ * instead of the raw lifetime-points counter, so a member can register
+ * "what I'm working toward" at a glance, without opening Community Pass.
  */
 export function CommunityPassCard({ progress, onView }: CommunityPassCardProps) {
   const { lifetimePoints, nextMilestone, pointsRemaining, intervalFloor, intervalCeiling } = progress;
@@ -34,10 +37,10 @@ export function CommunityPassCard({ progress, onView }: CommunityPassCardProps) 
       style={{
         width: "100%",
         textAlign: "left",
-        background: "var(--ld-semantic-color-surface, #ffffff)",
-        border: "1px solid var(--ld-semantic-color-separator, #e0e8ee)",
-        borderRadius: 12,
-        padding: "14px 16px",
+        background: "transparent",
+        border: "none",
+        borderRadius: 8,
+        padding: 0,
         cursor: "pointer",
         display: "flex",
         flexDirection: "column",

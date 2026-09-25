@@ -75,6 +75,15 @@ export function CommunityPassPage() {
                       {formatPoints(pointsRemaining)} points remaining
                     </Body>
                   </div>
+                  {/*
+                   * Phase 1B: the action lives right where the goal is
+                   * understood — not at the bottom of the page after two more
+                   * informational sections. This is the natural next step
+                   * after "here's my goal," not an unrelated button.
+                   */}
+                  <Button variant="primary" size="medium" onClick={() => navigateTo("home")}>
+                    Explore activities
+                  </Button>
                 </>
               ) : (
                 <Body as="div" UNSAFE_style={{ margin: 0, color: "var(--ld-semantic-color-text-subtle)" }}>
@@ -170,18 +179,15 @@ export function CommunityPassPage() {
             </div>
           </div>
 
-          {/* How points are earned */}
+          {/* How points are earned — informational only; the action is above, in block B. */}
           <div style={{ padding: "8px 16px 0" }}>
             <Heading as="h3" UNSAFE_style={{ margin: "0 0 8px", fontSize: 18 }}>
               How points are earned
             </Heading>
-            <Body as="div" UNSAFE_style={{ margin: "0 0 12px", color: "var(--ld-semantic-color-text-subtle)" }}>
+            <Body as="div" UNSAFE_style={{ margin: 0, color: "var(--ld-semantic-color-text-subtle)" }}>
               Eligible Community activities show how many points you can earn before you start. Not every activity
               is points-eligible.
             </Body>
-            <Button variant="secondary" size="medium" onClick={() => navigateTo("home")}>
-              Explore activities
-            </Button>
           </div>
         </Container>
       </div>

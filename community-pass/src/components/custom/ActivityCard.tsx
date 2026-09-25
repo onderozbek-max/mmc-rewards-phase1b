@@ -30,17 +30,16 @@ export function ActivityCard({ activity, completed, onStart }: ActivityCardProps
            * reads more clearly than a chip/tag, which visually implied a
            * tappable control here.
            *
-           * Phase 1B: pre-participation, names the connection to Community
-           * Pass ("toward Community Pass") so the member can read
-           * participation as progress before starting, without a
-           * projected-total calculation. Once completed, the forward-looking
-           * "Earn" framing no longer applies — fall back to the neutral 1A
-           * phrasing so the card doesn't read as still-pending.
+           * Phase 1B: pre-participation, "Earn" frames the point value as
+           * something the member is about to do, not a static fact — the
+           * connection to Community Pass is carried by the shared panel this
+           * card now sits inside (see CommunityHomePage) rather than
+           * repeated in every card's copy. Once completed, the
+           * forward-looking framing no longer applies — fall back to the
+           * neutral 1A phrasing so the card doesn't read as still-pending.
            */}
           <Body as="div" UNSAFE_style={{ margin: 0, fontSize: 13, color: "var(--ld-semantic-color-text-subtlest)" }}>
-            {completed
-              ? `${activity.points} points`
-              : `Earn ${activity.points} points toward Community Pass`}
+            {completed ? `${activity.points} points` : `Earn ${activity.points} points`}
             &nbsp;•&nbsp; Ends {formatDate(activity.endDate)}
           </Body>
           <div style={{ marginTop: 4 }}>

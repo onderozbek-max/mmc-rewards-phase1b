@@ -4,6 +4,7 @@ import { Container } from "../components/Container";
 import { Heading, Body } from "../components/Text";
 import { SectionHeader } from "../components/SectionHeader";
 import { Card, CardContent } from "../components/Card";
+import { Divider } from "../components/Divider";
 import { ScreenHeader } from "../components/custom/ScreenHeader";
 import { BottomNavBar, BOTTOM_NAV_HEIGHT } from "../components/custom/BottomNavBar";
 import { CommunityPassCard } from "../components/custom/CommunityPassCard";
@@ -65,29 +66,45 @@ export function CommunityHomePage() {
             </div>
           </div>
 
+          {/*
+           * Phase 1B: the goal (Community Pass progress) and the ways to act
+           * on it (open activities) share one panel instead of living in two
+           * separately-framed page sections. The member reads top-to-bottom:
+           * here's the goal, here's how to move toward it — a structural
+           * relationship rather than a sentence explaining the relationship.
+           */}
           <div style={{ padding: "16px 16px 0" }}>
-            <CommunityPassCard progress={progress} onView={() => navigateTo("communityPass")} />
-          </div>
+            <div
+              style={{
+                background: "var(--ld-semantic-color-surface, #ffffff)",
+                border: "1px solid var(--ld-semantic-color-separator, #e0e8ee)",
+                borderRadius: 16,
+                padding: "16px 16px 20px",
+              }}
+            >
+              <CommunityPassCard progress={progress} onView={() => navigateTo("communityPass")} />
 
-          <div style={{ padding: "24px 16px 0" }}>
-            <SectionHeader title="Open activities" count={OPEN_ACTIVITIES.length} headingLevel="h3" divider />
-            {progress.nextMilestone ? (
-              <Body
-                as="div"
-                UNSAFE_style={{ margin: "8px 0 0", fontSize: 13, color: "var(--ld-semantic-color-text-subtle)" }}
-              >
-                Completing these moves you closer to your next Community Pass benefit.
-              </Body>
-            ) : null}
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}>
-              {OPEN_ACTIVITIES.map((activity) => (
-                <ActivityCard
-                  key={activity.id}
-                  activity={activity}
-                  completed={completedOpenActivityIds.includes(activity.id)}
-                  onStart={() => navigateTo("activity", activity.id)}
-                />
-              ))}
+              <div style={{ margin: "16px 0" }}>
+                <Divider />
+              </div>
+
+              <SectionHeader
+                title="Ways to make progress"
+                count={OPEN_ACTIVITIES.length}
+                headingLevel="h3"
+                size="small"
+                divider={false}
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 12 }}>
+                {OPEN_ACTIVITIES.map((activity) => (
+                  <ActivityCard
+                    key={activity.id}
+                    activity={activity}
+                    completed={completedOpenActivityIds.includes(activity.id)}
+                    onStart={() => navigateTo("activity", activity.id)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
