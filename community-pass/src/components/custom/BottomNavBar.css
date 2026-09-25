@@ -1,0 +1,40 @@
+/*
+ * Sam's Club app bottom nav needs all 5 icon+label tabs visible at once on a
+ * phone-width screen (see reference screenshots). The generated TabNavigation
+ * component is built for a horizontally-scrolling *top* tab row (natural
+ * width, icon-beside-label, overflow-x: auto) — it does not have an
+ * icon-over-label / equal-width variant. Rather than edit the generated
+ * TabNavigation.css (read-only), this scoped override stylesheet reshapes it
+ * for the bottom-nav use case without touching the generated file.
+ */
+.mmc-bottom-nav .ld-tabnavigation-list {
+  width: 100%;
+}
+
+.mmc-bottom-nav .ld-tabnavigation-tabNavigationItemContainer {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.mmc-bottom-nav .ld-tabnavigation-tabnavigationitem-tabNavigationItem {
+  flex-direction: column;
+  justify-content: center;
+  height: auto;
+  min-height: 56px;
+  width: 100%;
+  padding: 6px 2px 8px;
+  gap: 2px;
+}
+
+.mmc-bottom-nav .ld-tabnavigation-tabnavigationitem-leadingIcon {
+  margin-right: 0;
+}
+
+.mmc-bottom-nav .ld-tabnavigation-tabnavigationitem-label {
+  font-size: 0.6875rem;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
