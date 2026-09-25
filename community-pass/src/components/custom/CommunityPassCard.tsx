@@ -10,15 +10,14 @@ export interface CommunityPassCardProps {
 }
 
 /**
- * Community Pass goal block on Community Home.
+ * Community Pass goal module on Community Home.
  *
- * Phase 1B revision: this no longer stands alone as its own bordered card.
- * It is the top compartment of a single shared panel — see
- * `CommunityHomePage` — that also contains the activities that can move the
- * member toward this goal, so the goal and the ways to act on it read as one
- * system instead of two separately-framed pieces of the page. This
- * component therefore renders no background/border of its own; it inherits
- * the panel's surface. The goal (points remaining + what it unlocks) leads
+ * Phase 1B: a self-contained card that ends before "Ways to make progress"
+ * begins — the goal and the ways to act on it are two distinct, bordered
+ * pieces of the page, not one shared container. The causal relationship
+ * between them comes from proximity and the "Ways to make progress" label
+ * immediately below (see `CommunityHomePage`), not from sharing a border.
+ * Inside the module, the goal (points remaining + what it unlocks) leads
  * instead of the raw lifetime-points counter, so a member can register
  * "what I'm working toward" at a glance, without opening Community Pass.
  */
@@ -37,10 +36,10 @@ export function CommunityPassCard({ progress, onView }: CommunityPassCardProps) 
       style={{
         width: "100%",
         textAlign: "left",
-        background: "transparent",
-        border: "none",
-        borderRadius: 8,
-        padding: 0,
+        background: "var(--ld-semantic-color-surface, #ffffff)",
+        border: "1px solid var(--ld-semantic-color-separator, #e0e8ee)",
+        borderRadius: 12,
+        padding: "14px 16px",
         cursor: "pointer",
         display: "flex",
         flexDirection: "column",
@@ -63,7 +62,15 @@ export function CommunityPassCard({ progress, onView }: CommunityPassCardProps) 
             >
               {formatPoints(pointsRemaining)} points to your next benefit
             </Heading>
-            <Body as="div" UNSAFE_style={{ margin: 0, fontSize: 13, color: "var(--ld-semantic-color-text-subtle)" }}>
+            {/*
+             * Named benefit ("what") — bumped from subtle-gray caption weight
+             * to full text color + medium weight so it reads as the specific
+             * reward being worked toward, not decorative supporting copy.
+             * The headline above already carries "how far" (points
+             * remaining); this line and the bar below it carry "what" and
+             * "how far, visually," respectively. No copy changed.
+             */}
+            <Body as="div" UNSAFE_style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--ld-semantic-color-text)" }}>
               {nextMilestone.benefit}
             </Body>
             <MilestoneProgressBar min={intervalFloor} max={intervalCeiling} value={lifetimePoints} a11yLabel="" />
