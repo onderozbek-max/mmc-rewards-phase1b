@@ -8,6 +8,7 @@ import { CommunityPassPage } from "./pages/CommunityPassPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ActivityPage } from "./pages/ActivityPage";
 import { DevStateSwitcher } from "./components/custom/DevStateSwitcher";
+import { StakeholderPanel } from "./components/custom/StakeholderPanel";
 import { useView, setMemberStateId } from "./utils/appState";
 import type { MemberStateId } from "./data/communityPassData";
 
@@ -71,6 +72,13 @@ export default function App() {
           )}
         </div>
       </div>
+      {/*
+       * Stakeholder-review panel: prototype metadata for reviewers opening
+       * the GitHub Pages link, not part of the MMC product. Rendered outside
+       * the phone frame; hidden entirely below desktop widths (see
+       * StakeholderPanel.css) so mobile viewers see only the clean prototype.
+       */}
+      <StakeholderPanel />
       <DevStateSwitcher />
     </A11yAnnouncementProvider>
   );

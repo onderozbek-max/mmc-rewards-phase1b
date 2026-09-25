@@ -1,0 +1,22 @@
+/*
+ * Stakeholder-review panel — prototype metadata, NOT Member's Mark Community
+ * product UI. Hidden by default (covers all mobile widths); only revealed at
+ * desktop widths wide enough for genuinely unused space beside the centered
+ * 430px mobile-app frame (see App.tsx: phone half-width 215px + 24px gap).
+ */
+.mmc-stakeholder-panel {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .mmc-stakeholder-panel {
+    display: block;
+    position: fixed;
+    top: 24px;
+    left: calc(50% + 239px);
+    width: 340px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    z-index: 5;
+  }
+}
