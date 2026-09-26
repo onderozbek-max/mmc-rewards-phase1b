@@ -95,7 +95,7 @@ function ProgressionRow({ code, name, status, last }: ProgressionRowProps) {
               padding: "2px 6px",
             }}
           >
-            Current phase
+            Current · Experiment
           </span>
         ) : status === "done" ? (
           <span
@@ -110,7 +110,7 @@ function ProgressionRow({ code, name, status, last }: ProgressionRowProps) {
               padding: "2px 6px",
             }}
           >
-            Foundational
+            Complete
           </span>
         ) : null}
       </div>
@@ -118,9 +118,27 @@ function ProgressionRow({ code, name, status, last }: ProgressionRowProps) {
   );
 }
 
+interface NotBuiltItem {
+  code: string;
+  name: string;
+  description: string;
+}
+
+const NOT_BUILT_YET: NotBuiltItem[] = [
+  { code: "1C", name: "Earn & Progress Feedback", description: "explicit participate → earn → changed-progress feedback." },
+  { code: "1D", name: "Milestone Achievement Experience", description: "milestone achievement experience." },
+  { code: "1E", name: "Full Milestone & Benefit Expansion", description: "full 250 / 1,000 / 3,000 operational benefit architecture." },
+  { code: "1F", name: "Historical Reconciliation & Full Population Rollout", description: "historical reconciliation and full-population rollout." },
+];
+
 export function StakeholderPanel() {
   return (
-    <div className="mmc-stakeholder-panel" aria-label="Prototype review notes" style={{ fontFamily: SYSTEM_FONT_STACK }}>
+    <div
+      className="mmc-stakeholder-panel"
+      aria-label="Prototype review notes"
+      tabIndex={0}
+      style={{ fontFamily: SYSTEM_FONT_STACK }}
+    >
       <div
         style={{
           background: "#ffffff",
@@ -143,25 +161,63 @@ export function StakeholderPanel() {
           Prototype review — not part of the product
         </div>
 
-        <h2 style={{ margin: "0 0 4px", fontSize: 20, fontWeight: 700, color: "#111111" }}>
+        <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: "#111111" }}>
           Phase 1B — Progress Motivation
         </h2>
-        <div style={{ fontSize: 13, color: "#5c5c5c" }}>Builds on Phase 1A</div>
+        <span
+          style={{
+            display: "inline-block",
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            color: "#ffffff",
+            background: "#111111",
+            borderRadius: 4,
+            padding: "3px 7px",
+          }}
+        >
+          Initiative type · Experiment
+        </span>
 
-        <Section title="What this adds">
-          Progress becomes an engagement mechanism. The next benefit is framed as an active goal, and available
-          activities are explicitly connected to making progress toward it.
+        <Section title="Foundation">
+          Phase 1A already provides a truthful working progression system: eligible participation updates lifetime
+          points; reachable milestones update correctly; the 250 benefit actually becomes available.
+        </Section>
+
+        <Section title="What 1B adds">
+          1B does not add rewards functionality. It tests whether making progress toward the next meaningful benefit
+          more prominent and connecting that goal to available participation increases repeat engagement.
+        </Section>
+
+        <Section title="Control">Complete Phase 1A functional progression.</Section>
+
+        <Section title="Treatment">
+          The same product truth and benefit, plus: next benefit → current progress → ways to make progress →
+          available activities.
         </Section>
 
         <Section title="What to evaluate">
-          Does connecting a meaningful progress goal to available participation opportunities create a stronger
-          reason to participate again?
+          Does this motivational-progress strategy increase repeat participation beyond functional progression?
         </Section>
 
-        <Section title="Not built yet">
-          Eligible activity points already update the member's underlying lifetime progress. What is not yet built
-          is a dedicated feedback moment explaining that change. Phase 1C adds the explicit participate → earn →
-          see progress change experience immediately after successful completion.
+        <Section title="Post-250 behavior">
+          When the member completes the active 250-point goal, the benefit actually unlocks in both control and
+          treatment. The motivational treatment then recedes until another meaningful operational benefit
+          destination exists. It does not manufacture a 1,000-point goal.
+        </Section>
+
+        <Section title="What is not built yet">
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {NOT_BUILT_YET.map((item) => (
+              <div key={item.code}>
+                <strong style={{ color: "#111111" }}>
+                  {item.code} — {item.name}:
+                </strong>{" "}
+                {item.description}
+              </div>
+            ))}
+          </div>
         </Section>
 
         <div style={{ marginTop: 24 }}>
@@ -175,12 +231,14 @@ export function StakeholderPanel() {
               marginBottom: 12,
             }}
           >
-            Progression
+            Phase progression
           </div>
-          <ProgressionRow code="1A" name="Rewards Journey" status="done" />
+          <ProgressionRow code="1A" name="Progression Foundation" status="done" />
           <ProgressionRow code="1B" name="Progress Motivation" status="current" />
           <ProgressionRow code="1C" name="Earn & Progress Feedback" status="upcoming" />
-          <ProgressionRow code="1D" name="Milestone Achievement & Unlocks" status="upcoming" last />
+          <ProgressionRow code="1D" name="Milestone Achievement Experience" status="upcoming" />
+          <ProgressionRow code="1E" name="Full Milestone & Benefit Expansion" status="upcoming" />
+          <ProgressionRow code="1F" name="Historical Reconciliation & Full Population Rollout" status="upcoming" last />
         </div>
       </div>
     </div>

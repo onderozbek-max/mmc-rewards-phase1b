@@ -10,9 +10,8 @@
 import { useStore, setStoreValue, getStoreValue } from "./store";
 import {
   DEFAULT_MEMBER_STATE_ID,
-  OPEN_ACTIVITIES,
-  PROTOTYPE_TODAY,
   getLifetimePoints,
+  PROTOTYPE_TODAY,
   type CompletedActivity,
   type MemberStateId,
   type OpenActivity,
@@ -24,13 +23,14 @@ const VIEW_KEY = "cp:view";
 const ACTIVE_ACTIVITY_KEY = "cp:activeActivityId";
 const MEMBER_STATE_KEY = "cp:memberStateId";
 /**
- * Composite "stateId:activityId" strings, scoped per representative member
- * state. Session-completed activities silently update that state's
- * underlying lifetime points (Phase 1B correction) — scoping per state keeps
- * switching the dev state switcher from leaking one state's completions
- * (and points) into another's.
+ * Eligible activities completed *this session*, keyed by member state so
+ * switching representative states never leaks completions between them.
+ * Not persisted to localStorage — a plain link always opens on the primary
+ * state (State B) with nothing pre-completed, per the prototype's reset
+ * behavior.
  */
-const COMPLETED_OPEN_ACTIVITIES_KEY = "cp:completedOpenActivityIds";
+const SESSION_COMPLETIONS_KEY = "cp:sessionCompletedActivities";
+type SessionCompletions = Partial<Record<MemberStateId, CompletedActivity[]>>;
 
 export function useView(): ViewId {
   return useStore<ViewId>(VIEW_KEY, "home");
@@ -53,65 +53,74 @@ export function useMemberStateId(): MemberStateId {
   return useStore<MemberStateId>(MEMBER_STATE_KEY, DEFAULT_MEMBER_STATE_ID);
 }
 
+/**
+ * Switching representative state is also the prototype's "reset" control —
+ * picking a state (including the one already active) clears this session's
+ * activity completions so the demo can be replayed from a clean baseline.
+ */
 export function setMemberStateId(id: MemberStateId): void {
   setStoreValue<MemberStateId>(MEMBER_STATE_KEY, id);
+  setStoreValue<SessionCompletions>(SESSION_COMPLETIONS_KEY, {});
 }
 
-function compositeActivityId(stateId: MemberStateId, activityId: string): string {
-  return `${stateId}:${activityId}`;
+function getSessionCompletionsForState(stateId: MemberStateId): CompletedActivity[] {
+  const all = getStoreValue<SessionCompletions>(SESSION_COMPLETIONS_KEY) ?? {};
+  return all[stateId] ?? [];
 }
 
-/**
- * Activity ids the member's *current representative state* has completed
- * this session (not persisted). Scoped per state, so switching the dev
- * state switcher never carries one state's completions into another's.
- */
+/** Eligible activities completed *this session* for the given member state. */
+export function useSessionCompletedActivities(stateId: MemberStateId): CompletedActivity[] {
+  const all = useStore<SessionCompletions>(SESSION_COMPLETIONS_KEY, {});
+  return all[stateId] ?? [];
+}
+
+/** IDs of open activities already completed this session, for the active member state. */
 export function useCompletedOpenActivityIds(): string[] {
   const stateId = useMemberStateId();
-  const composite = useStore<string[]>(COMPLETED_OPEN_ACTIVITIES_KEY, []);
-  const prefix = `${stateId}:`;
-  return composite.filter((id) => id.startsWith(prefix)).map((id) => id.slice(prefix.length));
+  const completions = useSessionCompletedActivities(stateId);
+  return completions.map((a) => a.id);
 }
 
 /**
- * Phase 1B correction: completing an eligible activity silently updates the
- * member's underlying Community Pass state (this was always a Phase 1A-level
- * capability — it was never actually deferred to 1C). What Phase 1C still
- * owns is the dedicated post-completion feedback moment, not the accounting.
- */
-export function markOpenActivityCompleted(stateId: MemberStateId, activityId: string): void {
-  const key = compositeActivityId(stateId, activityId);
-  // Read the current value directly (not via the hook) to avoid a stale closure.
-  const existing = getStoreValue<string[]>(COMPLETED_OPEN_ACTIVITIES_KEY) ?? [];
-  const next = existing.includes(key) ? existing : [...existing, key];
-  setStoreValue<string[]>(COMPLETED_OPEN_ACTIVITIES_KEY, next);
-}
-
-/** The open activities the member's current state has completed this session. */
-export function useCompletedOpenActivities(): OpenActivity[] {
-  const ids = useCompletedOpenActivityIds();
-  return OPEN_ACTIVITIES.filter((activity) => ids.includes(activity.id));
-}
-
-/**
- * Lifetime points = the state's static historical baseline + any eligible
- * activities completed this session. This is the single source of truth
- * every screen (Home, Community Pass detail, Profile) must read from so the
- * corrected total is always consistent and never double-counted.
+ * The member's true current lifetime points: the static representative-state
+ * total plus any eligible activities completed this session. This is the
+ * single source every screen (Home, Community Pass, Profile) must read from
+ * so a completed activity is reflected everywhere, immediately and
+ * consistently — no screen may show a stale total. Identical in control and
+ * treatment: this is foundational Phase 1A accounting, not a 1B behavior.
  */
 export function useLifetimePoints(): number {
   const stateId = useMemberStateId();
-  const base = getLifetimePoints(stateId);
-  const sessionExtra = useCompletedOpenActivities().reduce((sum, activity) => sum + activity.points, 0);
-  return base + sessionExtra;
+  const sessionPoints = useSessionCompletedActivities(stateId).reduce((sum, a) => sum + a.points, 0);
+  return getLifetimePoints(stateId) + sessionPoints;
 }
 
-/** Session completions reshaped as `CompletedActivity` records for Profile's history list. */
-export function useSessionCompletedActivities(): CompletedActivity[] {
-  return useCompletedOpenActivities().map((activity) => ({
+/** Base (representative-state) history plus this session's completions, newest first. */
+export function useCompletedActivitiesForProfile(baseActivities: CompletedActivity[]): CompletedActivity[] {
+  const stateId = useMemberStateId();
+  const sessionActivities = useSessionCompletedActivities(stateId);
+  return [...baseActivities, ...sessionActivities].sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
+/**
+ * Marks an eligible open activity as successfully completed and awards its
+ * points to the member's underlying lifetime-point state. This is a plain
+ * state update only — no completion sheet, progress animation, or
+ * progress-delta message is shown (that explicit feedback is Phase 1C
+ * scope). Idempotent: completing the same activity twice never awards
+ * points twice. Identical in control and treatment.
+ */
+export function markOpenActivityCompleted(activity: OpenActivity): void {
+  const stateId = getStoreValue<MemberStateId>(MEMBER_STATE_KEY) ?? DEFAULT_MEMBER_STATE_ID;
+  const all = getStoreValue<SessionCompletions>(SESSION_COMPLETIONS_KEY) ?? {};
+  const existing = all[stateId] ?? [];
+  if (existing.some((a) => a.id === activity.id)) return; // already awarded — no double credit
+
+  const record: CompletedActivity = {
     id: activity.id,
     title: activity.title,
     points: activity.points,
     date: PROTOTYPE_TODAY,
-  }));
+  };
+  setStoreValue<SessionCompletions>(SESSION_COMPLETIONS_KEY, { ...all, [stateId]: [...existing, record] });
 }

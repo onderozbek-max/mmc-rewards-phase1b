@@ -11,20 +11,13 @@ import { ScreenHeader } from "../components/custom/ScreenHeader";
 import { BottomNavBar, BOTTOM_NAV_HEIGHT } from "../components/custom/BottomNavBar";
 import { FaqCallout } from "../components/custom/FaqCallout";
 import { formatDate, formatMonthYear, formatPoints } from "../utils/communityPassProgress";
-import { navigateTo, useLifetimePoints, useMemberStateId, useSessionCompletedActivities } from "../utils/appState";
+import { navigateTo, useCompletedActivitiesForProfile, useLifetimePoints, useMemberStateId } from "../utils/appState";
 import { MEMBER_NAME, MEMBER_STATES, MEMBER_TENURE_START } from "../data/communityPassData";
 
 export function ProfilePage() {
   const memberStateId = useMemberStateId();
   const lifetimePoints = useLifetimePoints();
-  const sessionCompletedActivities = useSessionCompletedActivities();
-  // Session-completed activities are dated `PROTOTYPE_TODAY`, so folding them
-  // in before sorting naturally surfaces them at the top of the history —
-  // consistent with the corrected lifetime-points total above, no separate
-  // "recently completed" treatment (that call-out belongs to Phase 1C).
-  const completedActivities = [...MEMBER_STATES[memberStateId].completedActivities, ...sessionCompletedActivities].sort(
-    (a, b) => (a.date < b.date ? 1 : -1),
-  );
+  const completedActivities = useCompletedActivitiesForProfile(MEMBER_STATES[memberStateId].completedActivities);
 
   return (
     <Page title="Profile" titleVisuallyHidden>

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Body, Heading } from "../../components/Text";
-import { ChevronRightIcon } from "../../components/Icons/Icons";
+import { ChevronRightIcon, CheckCircleIcon } from "../../components/Icons/Icons";
 import { MilestoneProgressBar } from "./MilestoneProgressBar";
 import { formatPoints, type CommunityPassProgress } from "../../utils/communityPassProgress";
 
@@ -10,28 +10,29 @@ export interface CommunityPassCardProps {
 }
 
 /**
- * Community Pass goal module on Community Home.
+ * Community Pass goal module on Community Home — the Phase 1B EXPERIMENT
+ * treatment. Underlying value (points, threshold, benefit) is identical to
+ * the Phase 1A control; only presentation differs here.
  *
- * Phase 1B: a self-contained card that ends before "Ways to make progress"
- * begins — the goal and the ways to act on it are two distinct, bordered
- * pieces of the page, not one shared container. The causal relationship
- * between them comes from proximity and the "Ways to make progress" label
- * immediately below (see `CommunityHomePage`), not from sharing a border.
- * Inside the module, the goal (points remaining + what it unlocks) leads
- * instead of the raw lifetime-points counter, so a member can register
- * "what I'm working toward" at a glance, without opening Community Pass.
+ * While the operational (250-point) benefit is still ahead, this card leads
+ * with the goal itself — points remaining + the specific benefit it unlocks
+ * — so a member registers "what I'm working toward" at a glance. Once that
+ * benefit is truthfully unlocked, the treatment gracefully recedes to a
+ * plain completed/unlocked state (mirrors the Phase 1A foundation's
+ * completed-state treatment) instead of manufacturing a new active goal
+ * toward 1,000 — that benefit isn't operationalized in this prototype.
  */
 export function CommunityPassCard({ progress, onView }: CommunityPassCardProps) {
-  const { lifetimePoints, nextMilestone, pointsRemaining, intervalFloor, intervalCeiling } = progress;
+  const { lifetimePoints, firstBenefit, firstBenefitUnlocked, pointsRemainingToFirstBenefit } = progress;
 
   return (
     <button
       type="button"
       onClick={onView}
       aria-label={
-        nextMilestone
-          ? `Community Pass — ${formatPoints(pointsRemaining)} points to your next benefit, ${nextMilestone.benefit}. ${formatPoints(lifetimePoints)} lifetime points.`
-          : `Community Pass — ${formatPoints(lifetimePoints)} lifetime points`
+        firstBenefitUnlocked
+          ? `Community Pass — ${formatPoints(firstBenefit.points)}-point benefit unlocked, ${firstBenefit.benefit}. ${formatPoints(lifetimePoints)} lifetime points.`
+          : `Community Pass — ${formatPoints(pointsRemainingToFirstBenefit)} points to your next benefit, ${firstBenefit.benefit}. ${formatPoints(lifetimePoints)} lifetime points.`
       }
       style={{
         width: "100%",
@@ -54,38 +55,40 @@ export function CommunityPassCard({ progress, onView }: CommunityPassCardProps) 
       </div>
 
       <div aria-hidden style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {nextMilestone ? (
+        {!firstBenefitUnlocked ? (
           <>
             <Heading
               as="h3"
               UNSAFE_style={{ margin: 0, fontSize: 17, color: "var(--wcp-semantic-color-surface-overlay-brand-bold, #283645)" }}
             >
-              {formatPoints(pointsRemaining)} points to your next benefit
+              {formatPoints(pointsRemainingToFirstBenefit)} points to your next benefit
             </Heading>
-            {/*
-             * Named benefit ("what") — bumped from subtle-gray caption weight
-             * to full text color + medium weight so it reads as the specific
-             * reward being worked toward, not decorative supporting copy.
-             * The headline above already carries "how far" (points
-             * remaining); this line and the bar below it carry "what" and
-             * "how far, visually," respectively. No copy changed.
-             */}
             <Body as="div" UNSAFE_style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--ld-semantic-color-text)" }}>
-              {nextMilestone.benefit}
+              {firstBenefit.benefit}
             </Body>
-            <MilestoneProgressBar min={intervalFloor} max={intervalCeiling} value={lifetimePoints} a11yLabel="" />
+            <MilestoneProgressBar min={0} max={firstBenefit.points} value={lifetimePoints} a11yLabel="" />
             <Body as="div" UNSAFE_style={{ margin: 0, fontSize: 13, color: "var(--ld-semantic-color-text-subtle)" }}>
               {formatPoints(lifetimePoints)} lifetime points
             </Body>
           </>
         ) : (
           <>
-            <Heading as="h3" UNSAFE_style={{ margin: 0, fontSize: 17 }}>
-              Community Pass
-            </Heading>
+            {/*
+             * The 250 goal is complete — the motivational treatment recedes
+             * to a truthful completed/unlocked state instead of continuing
+             * to point at 1,000 (not an operationalized benefit here).
+             */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <CheckCircleIcon decorative size="small" style={{ color: "var(--ld-semantic-color-text-positive)" }} />
+              <Heading as="h3" UNSAFE_style={{ margin: 0, fontSize: 17 }}>
+                {formatPoints(firstBenefit.points)}-point benefit unlocked
+              </Heading>
+            </div>
+            <Body as="div" UNSAFE_style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--ld-semantic-color-text)" }}>
+              {firstBenefit.benefit}
+            </Body>
             <Body as="div" UNSAFE_style={{ margin: 0, fontSize: 13, color: "var(--ld-semantic-color-text-subtle)" }}>
-              You've unlocked every benefit milestone we've defined so far. {formatPoints(lifetimePoints)} lifetime
-              points.
+              {formatPoints(lifetimePoints)} lifetime points
             </Body>
           </>
         )}

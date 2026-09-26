@@ -9,32 +9,43 @@ import { Button } from "../components/Button";
 import { Alert } from "../components/Alert";
 import { Tag } from "../components/Tag";
 import { ScreenHeader } from "../components/custom/ScreenHeader";
-import { navigateTo, useActiveActivityId, useMemberStateId, markOpenActivityCompleted } from "../utils/appState";
+import { navigateTo, useActiveActivityId, markOpenActivityCompleted } from "../utils/appState";
 import { OPEN_ACTIVITIES } from "../data/communityPassData";
 
 const Q1_OPTIONS = ["Very likely", "Somewhat likely", "Not likely"];
 const Q2_OPTIONS = ["Great", "Okay", "Not great"];
 
 /**
- * Simulated RedJade-style survey activity. On successful submission, the
- * member's underlying Community Pass lifetime points update silently — this
- * is Phase 1A/1B-level accounting, not deferred. What IS still deferred to
- * Phase 1C is a dedicated post-completion feedback moment; the activity card
- * simply flips to "Completed" and the member sees the corrected totals when
- * they naturally arrive on Home/Community Pass/Profile — no "+30", no
- * animated transition, no completion bottom sheet here or on return.
- * Exiting (back) before submitting still awards zero points.
+ * Simulated RedJade-style survey activity.
+ *
+ * This is foundational Phase 1A behavior that Phase 1B inherits unchanged:
+ * successful completion truthfully awards the activity's points to the
+ * member's underlying lifetime-point state (reflected on Home, Community
+ * Pass, and Profile immediately, identically in control and treatment). What
+ * 1B still does NOT add is a dedicated post-completion earn/progress
+ * feedback moment — no "+30 points" message, no progress animation, no "you
+ * moved closer" copy. That explicit causal-feedback experience is Phase 1C.
+ * Opening the activity or exiting before Submit awards nothing; the
+ * activity can only be completed — and only award its points — once per
+ * session.
  */
 export function ActivityPage() {
   const activityId = useActiveActivityId();
-  const memberStateId = useMemberStateId();
   const activity = OPEN_ACTIVITIES.find((a) => a.id === activityId) ?? OPEN_ACTIVITIES[0];
   const [q1, setQ1] = React.useState<string | null>(null);
   const [q2, setQ2] = React.useState<string | null>(null);
   const [submitted, setSubmitted] = React.useState(false);
 
+  function handleSubmit() {
+    // Points are awarded at the moment of successful completion — not when
+    // the member opens the activity, and not deferred until they navigate
+    // back. This is a plain state update: no completion sheet, no "+30
+    // points" message, no progress animation.
+    markOpenActivityCompleted(activity);
+    setSubmitted(true);
+  }
+
   function handleReturn() {
-    markOpenActivityCompleted(memberStateId, activity.id);
     navigateTo("home");
   }
 
@@ -115,7 +126,7 @@ export function ActivityPage() {
                       size="medium"
                       isFullWidth
                       disabled={!q1 || !q2}
-                      onClick={() => setSubmitted(true)}
+                      onClick={handleSubmit}
                     >
                       Submit
                     </Button>

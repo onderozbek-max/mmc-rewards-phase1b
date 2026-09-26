@@ -22,7 +22,7 @@ import { MILESTONES } from "../data/communityPassData";
 export function CommunityPassPage() {
   const lifetimePoints = useLifetimePoints();
   const progress = getCommunityPassProgress(lifetimePoints);
-  const { nextMilestone, pointsRemaining, intervalFloor, intervalCeiling } = progress;
+  const { firstBenefit, firstBenefitUnlocked, pointsRemainingToFirstBenefit } = progress;
 
   return (
     <Page title="Community Pass" titleVisuallyHidden>
@@ -58,36 +58,47 @@ export function CommunityPassPage() {
                 <span style={{ fontSize: 14, color: "var(--ld-semantic-color-text-subtle)" }}>lifetime points</span>
               </div>
 
-              {nextMilestone ? (
+              {!firstBenefitUnlocked ? (
                 <>
                   <MilestoneProgressBar
-                    min={intervalFloor}
-                    max={intervalCeiling}
+                    min={0}
+                    max={firstBenefit.points}
                     value={lifetimePoints}
-                    a11yLabel={`${formatPoints(lifetimePoints)} of ${formatPoints(intervalCeiling)} lifetime points toward your next benefit`}
+                    a11yLabel={`${formatPoints(lifetimePoints)} of ${formatPoints(firstBenefit.points)} lifetime points toward your next benefit`}
                   />
                   <div>
                     <Body as="div" UNSAFE_style={{ margin: 0, fontWeight: 700 }}>
-                      Next benefit: {nextMilestone.benefit}
+                      Next benefit: {firstBenefit.benefit}
                     </Body>
                     <Body as="div" UNSAFE_style={{ margin: "2px 0 0", color: "var(--ld-semantic-color-text-subtle)" }}>
-                      {formatPoints(pointsRemaining)} points remaining
+                      {formatPoints(pointsRemainingToFirstBenefit)} points remaining
                     </Body>
                   </div>
                   {/*
                    * Phase 1B: the action lives right where the goal is
                    * understood — not at the bottom of the page after two more
                    * informational sections. This is the natural next step
-                   * after "here's my goal," not an unrelated button.
+                   * after "here's my goal," not an unrelated button. Once the
+                   * goal is fulfilled below, this CTA recedes — the single
+                   * "see open activities" affordance moves to the neutral
+                   * informational section at the bottom of the page instead.
                    */}
                   <Button variant="primary" size="medium" onClick={() => navigateTo("home")}>
                     Explore activities
                   </Button>
                 </>
               ) : (
-                <Body as="div" UNSAFE_style={{ margin: 0, color: "var(--ld-semantic-color-text-subtle)" }}>
-                  You've unlocked every benefit milestone we've defined so far.
-                </Body>
+                <>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <CheckCircleIcon decorative style={{ color: "var(--ld-semantic-color-text-positive)" }} />
+                    <Body as="div" UNSAFE_style={{ margin: 0, fontWeight: 700 }}>
+                      {formatPoints(firstBenefit.points)}-point milestone: Completed
+                    </Body>
+                  </div>
+                  <Body as="div" UNSAFE_style={{ margin: 0, color: "var(--ld-semantic-color-text-subtle)" }}>
+                    Benefit unlocked: {firstBenefit.benefit}
+                  </Body>
+                </>
               )}
             </div>
           </div>
@@ -106,8 +117,15 @@ export function CommunityPassPage() {
 
             <div>
               {MILESTONES.map((m, i) => {
-                const isUnlocked = lifetimePoints >= m.points;
-                const isNext = nextMilestone?.points === m.points;
+                // Only the first, operational milestone (250) has real
+                // achieved/next semantics here. 1,000 and 3,000 are real
+                // future milestones, but since no benefit is built for them
+                // yet, they always render as a plain future entry — never
+                // "achieved" or an active "next benefit" promise, no matter
+                // how many lifetime points a member has (see
+                // Milestone.operational).
+                const isUnlocked = m.operational && lifetimePoints >= m.points;
+                const isNext = m.operational && !isUnlocked;
                 const isLast = i === MILESTONES.length - 1;
                 const lineColor = isUnlocked
                   ? "var(--wcp-semantic-color-surface-overlay-brand-bold, #283645)"
@@ -161,6 +179,10 @@ export function CommunityPassPage() {
                         <Tag color="brand" size="small">
                           Next benefit
                         </Tag>
+                      ) : !m.operational ? (
+                        <Tag color="neutral" size="small">
+                          Future milestone
+                        </Tag>
                       ) : null}
                     </div>
                     <Body
@@ -178,15 +200,27 @@ export function CommunityPassPage() {
             </div>
           </div>
 
-          {/* How points are earned — informational only; the action is above, in block B. */}
+          {/*
+           * How points are earned — informational. While the 250 goal is
+           * still active, the single CTA to activities lives above in block
+           * B ("Explore activities") — no duplicate button here. Once the
+           * goal is fulfilled, block B no longer carries a CTA (there's no
+           * active goal to explore toward), so this becomes the page's one
+           * neutral affordance back to open activities.
+           */}
           <div style={{ padding: "8px 16px 0" }}>
             <Heading as="h3" UNSAFE_style={{ margin: "0 0 8px", fontSize: 18 }}>
               How points are earned
             </Heading>
-            <Body as="div" UNSAFE_style={{ margin: 0, color: "var(--ld-semantic-color-text-subtle)" }}>
+            <Body as="div" UNSAFE_style={{ margin: "0 0 12px", color: "var(--ld-semantic-color-text-subtle)" }}>
               Eligible Community activities show how many points you can earn before you start. Not every activity
               is points-eligible.
             </Body>
+            {firstBenefitUnlocked ? (
+              <Button variant="secondary" size="medium" onClick={() => navigateTo("home")}>
+                See open activities
+              </Button>
+            ) : null}
           </div>
         </Container>
       </div>
