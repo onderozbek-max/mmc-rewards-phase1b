@@ -69,6 +69,12 @@ export const MEMBER_TENURE_START = "2026-06-01"; // "In the community since June
 
 // ---------------------------------------------------------------------------
 // Open activities — shown on Community Home regardless of member state.
+//
+// Point supply is intentionally sized so the default demo journey (member
+// state B, 180 lifetime points, 70 points from the 250 benefit) can
+// naturally cross the 250-point milestone by completing all three activities
+// through normal use — no developer/scenario controls required:
+//   180 + 30 = 210 -> + 20 = 230 -> + 30 = 260 (250 milestone achieved).
 // ---------------------------------------------------------------------------
 
 export const OPEN_ACTIVITIES: OpenActivity[] = [
@@ -85,10 +91,19 @@ export const OPEN_ACTIVITIES: OpenActivity[] = [
     id: "tell-us",
     title: "Tell us what you think",
     description: "Share your take on products and experiences.",
-    points: 10,
+    points: 20,
     endDate: "2026-10-15",
     illustrationType: "spot",
     illustrationName: "Featured",
+  },
+  {
+    id: "visit-feedback",
+    title: "How was today's visit?",
+    description: "Rate your most recent shopping trip.",
+    points: 30,
+    endDate: "2026-10-22",
+    illustrationType: "spot",
+    illustrationName: "Scan&Go",
   },
 ];
 
