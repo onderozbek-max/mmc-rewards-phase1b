@@ -198,13 +198,29 @@ export function StakeholderPanel() {
         </Section>
 
         <Section title="What to evaluate">
-          Does this motivational-progress strategy increase repeat participation beyond functional progression?
+          This experiment exists to determine whether progress drives engagement: does making progress toward the
+          next meaningful benefit more prominent, and connecting that progress to available participation, increase
+          repeat participation beyond complete functional progression alone?
         </Section>
 
         <Section title="Post-250 behavior">
           When the member completes the active 250-point goal, the benefit actually unlocks in both control and
           treatment. The motivational treatment then recedes until another meaningful operational benefit
           destination exists. It does not manufacture a 1,000-point goal.
+        </Section>
+
+        <Section title="Decision consequences">
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div>
+              <strong style={{ color: "#111111" }}>Positive result:</strong> carry the motivational-progress layer
+              forward wherever a meaningful operational benefit destination exists.
+            </div>
+            <div>
+              <strong style={{ color: "#111111" }}>Negative result:</strong> retain the complete functional
+              progression and remove or simplify the optional motivational layer. Progression itself — points,
+              milestones, benefit fulfillment — continues either way; only the presentation layer is at stake.
+            </div>
+          </div>
         </Section>
 
         <Section title="What is not built yet">

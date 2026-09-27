@@ -33,8 +33,13 @@ const SCENARIOS: Scenario[] = [
   { id: "D", label: "First milestone achieved" },
 ];
 
-/** Additional representative states kept for broader QA coverage — not part of the three named scenarios above. */
-const OTHER_STATES: MemberStateId[] = ["A", "E"];
+/**
+ * Additional representative states kept for broader QA coverage — not part
+ * of the three named scenarios above. "F" is an edge-case-only state (220
+ * pts) that exists purely to verify the exact 220 + 30 = 250 boundary; it
+ * isn't a demonstration scenario.
+ */
+const OTHER_STATES: MemberStateId[] = ["A", "E", "F"];
 
 /**
  * Design-review-only scenario harness. NOT part of the member experience —

@@ -13,6 +13,7 @@ import { ChevronRightIcon, LockIcon } from "../components/Icons/Icons";
 import { getCommunityPassProgress } from "../utils/communityPassProgress";
 import { navigateTo, useCompletedOpenActivityIds, useLifetimePoints, useMemberStateId } from "../utils/appState";
 import { MEMBER_NAME, MEMBER_STATES, OPEN_ACTIVITIES } from "../data/communityPassData";
+import "./CommunityHomePage.css";
 
 export function CommunityHomePage() {
   const memberStateId = useMemberStateId();
@@ -162,7 +163,12 @@ export function CommunityHomePage() {
             </>
           ) : (
             <div style={{ padding: "24px 16px 0" }}>
-              <SectionHeader title="What's New + Member Favorites" headingLevel="h3" divider />
+              <SectionHeader
+                UNSAFE_className="mmc-benefit-header--wrap"
+                title="What's New + Member Favorites"
+                headingLevel="h3"
+                divider
+              />
               <div style={{ marginTop: 12 }}>
                 <Card>
                   <CardContent>

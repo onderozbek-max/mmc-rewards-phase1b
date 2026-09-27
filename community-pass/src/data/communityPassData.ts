@@ -186,7 +186,7 @@ const PRIMARY_COMPLETED_ACTIVITIES: CompletedActivity[] = [
   { id: "p10", title: "Quick poll: weekend shopping habits", points: 10, date: "2026-09-19" },
 ];
 
-export type MemberStateId = "A" | "B" | "C" | "D" | "E";
+export type MemberStateId = "A" | "B" | "C" | "D" | "E" | "F";
 
 export interface MemberState {
   id: MemberStateId;
@@ -224,6 +224,11 @@ export const MEMBER_STATES: Record<MemberStateId, MemberState> = {
     id: "E",
     devLabel: "Architecture test only — not an operational benefit (1,200 pts)",
     completedActivities: buildCompletedActivities(1200, MEMBER_TENURE_START),
+  },
+  F: {
+    id: "F",
+    devLabel: "Edge-case QA only — 220 pts (verifies exact 220+30=250 boundary)",
+    completedActivities: buildCompletedActivities(220, MEMBER_TENURE_START),
   },
 };
 

@@ -1,0 +1,15 @@
+/*
+ * Scoped override for the locked "What's New + Member Favorites" section
+ * title on Community Home. The shared SectionHeader component (immutable —
+ * see its file header) truncates long titles to a single line with an
+ * ellipsis by default; at narrow mobile widths (320–390px) that clips this
+ * specific benefit name. Natural wrapping reads better here than shrinking
+ * type further, so this override only removes the single-line/ellipsis
+ * behavior for this one instance — it does not change SectionHeader itself
+ * or any other section title in the app.
+ */
+.mmc-benefit-header--wrap .ld-section-header__title {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
